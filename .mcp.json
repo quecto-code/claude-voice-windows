@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "claude-voice": {
+      "command": "C:\\Users\\yuno\\dev\\claude-voice\\.venv\\Scripts\\python.exe",
+      "args": ["-m", "claude_voice"],
+      "env": {
+        "CLAUDE_VOICE_VOSK_MODEL_PATH": "C:\\Users\\yuno\\dev\\claude-voice\\models\\vosk-model-ja-0.22"
+      }
+    }
+  }
+}
