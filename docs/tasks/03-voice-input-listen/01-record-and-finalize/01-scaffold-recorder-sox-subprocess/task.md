@@ -14,7 +14,7 @@ depends_on: []
 ## 受入条件
 
 - [x] `src/claude_voice/listen/recorder.py` に `record(finalize_word: str, silence_sec: float, onset_timeout_sec: float) -> tuple[bytes, FinalizeReason]` の関数骨格が存在する → シグネチャ検証 pytest 1 件、`finalize_word` は `del` で明示的に未使用
-- [x] sox を仕様どおりのコマンドで起動する → mock の Popen 呼出引数で 4-token プレフィックス・raw/signed/16bit・silence エフェクト + `silence_sec` の文字列化を検証
+- [x] sox を仕様どおりのコマンドで起動する → mock の Popen 呼出引数で 4-token プレフィックス（`sox -t waveaudio default`）・raw/signed/16bit・silence エフェクト + `silence_sec` の文字列化を検証
 - [x] 単一読取スレッドが stdout から 4096 バイトずつ読み bytearray に蓄積する → `loud` 2 チャンクを流して `pcm == loud + loud` を検証 + `_chunk_amplitude` 単体テスト
 - [x] sox 自然終了で `(bytes(buffer), FinalizeReason.silence)` → 蓄積テストで同時確認
 - [x] onset timeout で sox を `terminate()` → `(b"", FinalizeReason.timeout)` → 永続無音ストリーム + `onset_timeout_sec=0.2` で `terminate_called == True` と elapsed < 2s を検証
@@ -32,7 +32,7 @@ depends_on: []
 - `docs/tasks/STATUS.md`（9/17）
 
 実装ポイント:
-- sox コマンドは仕様の引数列をそのまま `subprocess.Popen` に渡す（`-r 16000 -c 1 -t raw -e signed -b 16 -` + `silence 1 0.05 1% 1 {silence_sec} 1%`）
+- sox コマンドは仕様の引数列をそのまま `subprocess.Popen` に渡す（`-t waveaudio default -r 16000 -c 1 -t raw -e signed -b 16 -` + `silence 1 0.05 1% 1 {silence_sec} 1%`）
 - onset 判定は `int16` LE PCM の絶対値平均 > 500 を閾値（暫定値・将来 `config` 化可）
 - 単一読取スレッド (`daemon=True`) + メインの `time.sleep(0.05)` ポーリングで sox の自然終了 / onset timeout / 起動失敗の 3 経路を捌く
 - onset timeout 時は `proc.terminate()` → `proc.wait(timeout=1.0)` → 必要なら `proc.kill()`

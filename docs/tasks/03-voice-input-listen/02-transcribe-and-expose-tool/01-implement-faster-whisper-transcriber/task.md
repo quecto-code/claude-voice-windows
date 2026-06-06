@@ -70,7 +70,7 @@ def transcribe(pcm: bytes) -> str | None:
 
 ## 補足
 
-- GPU: RTX 3050 8GB / `libcuda.so` は WSL から利用可（確認済み）
+- GPU: RTX 3050 8GB / Windows ネイティブの CUDA・cuDNN ランタイム（`.dll`）を利用（[ADR-0005](../../../../adr/0005-windows-native-audio-path.md)。旧 WSL の `libcuda.so` 前提を更新）
 - [ADR-0003](../../../../adr/0003-dual-engine-streaming-listen.md)
 - 関連設計:
   - [design.md#インターフェース](../../../../design/design.md#インターフェース)（transcribe シグネチャ）

@@ -8,7 +8,7 @@ depends_on:
 
 ## 背景・目的
 
-マイクから録音し、「一定時間の無音」「確定ワード『以上』」「発話開始タイムアウト」のいずれかで録音を終わらせる関数を `recorder.py` に実装する。`design.md` 設計判断 2 の通り **sox 子プロセス + 単一読取スレッド + vosk + SIGTERM** で実装する（[ADR-0003](../../../adr/0003-dual-engine-streaming-listen.md)）。
+マイクから録音し、「一定時間の無音」「確定ワード『以上』」「発話開始タイムアウト」のいずれかで録音を終わらせる関数を `recorder.py` に実装する。`design.md` 設計判断 2 の通り **sox 子プロセス + 単一読取スレッド + vosk + terminate(停止)** で実装する（[ADR-0003](../../../adr/0003-dual-engine-streaming-listen.md)。Windows ネイティブのため停止は `proc.terminate()`、[ADR-0005](../../../adr/0005-windows-native-audio-path.md)）。
 
 ## ユーザーストーリー
 
@@ -19,9 +19,9 @@ depends_on:
 ## 受入条件
 
 - [ ] `src/claude_voice/listen/recorder.py` に `record(finalize_word: str, silence_sec: float, onset_timeout_sec: float) -> tuple[bytes, FinalizeReason]` が実装されている
-- [ ] sox を `sox -t pulseaudio default -r 16000 -c 1 -t raw -e signed -b 16 - silence 1 0.05 1% 1 {silence_sec} 1%` で起動し、stdout から raw PCM（16kHz/mono/s16le）を読み取れる
+- [ ] sox を `sox -t waveaudio default -r 16000 -c 1 -t raw -e signed -b 16 - silence 1 0.05 1% 1 {silence_sec} 1%` で起動し、stdout から raw PCM（16kHz/mono/s16le）を読み取れる
 - [ ] sox が無音 `silence_sec` 秒で自然終了 → `reason=FinalizeReason.silence`、確定 PCM を返す
-- [ ] 録音中の PCM チャンクを vosk Recognizer に逐次供給し、partial 結果に `finalize_word` を検出した時点で sox に SIGTERM → `reason=FinalizeReason.word`、確定 PCM を返す
+- [ ] 録音中の PCM チャンクを vosk Recognizer に逐次供給し、partial 結果に `finalize_word` を検出した時点で sox を `terminate()`（停止）→ `reason=FinalizeReason.word`、確定 PCM を返す
 - [ ] 発話開始（最初の振幅閾値超え）が `onset_timeout_sec` 秒以内に観測されない場合、sox を kill → `reason=FinalizeReason.timeout`、空 bytes を返す
 - [ ] 単一読取スレッドで実装され、メイン以外のスレッドは 1 本のみ。lock 不要
 - [ ] マイク不可・vosk モデル未配置など任意の失敗で例外を投げず、`(b"", FinalizeReason.timeout)` 等で返し stderr にログ出力

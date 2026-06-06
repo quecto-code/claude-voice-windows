@@ -7,15 +7,15 @@ depends_on: []
 
 ## 背景
 
-親 Story `00-environment-setup/02-external-services` の一部として、VOICEVOX Linux 版エンジンを DL し、ローカルで起動して `/version` が叩ける状態にする。
+親 Story `00-environment-setup/02-external-services` の一部として、VOICEVOX **Windows 版**エンジンを DL し、ローカルで起動して `/version` が叩ける状態にする（[ADR-0005](../../../../adr/0005-windows-native-audio-path.md)。旧 Linux 版前提を更新）。
 
 親 Story: 00-environment-setup/02-external-services
 
 ## 受入条件
 
-- [x] VOICEVOX Linux 版エンジンのアーカイブが DL され、プロジェクト外（例: `~/voicevox-engine/`）または合意した配置先に展開されている → `~/voicevox-engine/linux-nvidia/`（GPU 版 0.25.2）
-- [x] エンジン起動コマンド（例: `~/voicevox-engine/run`）が実行可能で、起動するとポート 50021 を listen する → `~/voicevox-engine/linux-nvidia/run --host 127.0.0.1 --port 50021 --use_gpu`、`ss -lnt | grep 50021` で確認
-- [x] 起動状態で `curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:50021/version` が `200` を返す → `200` / body `"0.25.2"`
+- [ ] VOICEVOX **Windows 版**エンジン（または VOICEVOX アプリ同梱エンジン）が DL され、合意した配置先に展開されている（例: `%LOCALAPPDATA%\Programs\VOICEVOX\` もしくは `voicevox-engine` 単体配布）
+- [ ] エンジン起動コマンド（`run.exe --host 127.0.0.1 --port 50021 --use_gpu`、または VOICEVOX アプリ起動）が実行可能で、起動するとポート 50021 を listen する → PowerShell `Get-NetTCPConnection -LocalPort 50021` で確認
+- [ ] 起動状態で `Invoke-RestMethod http://127.0.0.1:50021/version` が版番号を返す（HTTP 200）
 - [x] 起動コマンドと配置先パスがメモされている（後続 Story 03 の README に転記する）→ 下の「変更ファイル」に記載
 
 ## 仕様詳細
@@ -24,16 +24,18 @@ depends_on: []
 
 リポジトリ内ファイルへの変更はなし（環境作業）。配置先と起動コマンドを以下に記録（Story 03 で README へ転記）:
 
-- **配置先**: `~/voicevox-engine/linux-nvidia/`（GPU 版 / linux-nvidia-0.25.2）
-- **起動コマンド（バックグラウンド）**:
-  ```bash
-  nohup ~/voicevox-engine/linux-nvidia/run --host 127.0.0.1 --port 50021 --use_gpu \
-        > ~/voicevox-engine/engine.log 2>&1 &
+- **配置先（例）**: `%LOCALAPPDATA%\Programs\VOICEVOX\`（VOICEVOX アプリ）または `voicevox-engine`（エンジン単体配布）
+- **起動コマンド（PowerShell, バックグラウンド）**:
+  ```powershell
+  Start-Process -FilePath "<engine>\run.exe" `
+      -ArgumentList "--host","127.0.0.1","--port","50021","--use_gpu" `
+      -WindowStyle Hidden
   ```
-- **疎通確認**: `curl -s http://127.0.0.1:50021/version`
-- **停止**: `pkill -f voicevox-engine/linux-nvidia/run`
-- **DL 元（再現用）**: `https://github.com/VOICEVOX/voicevox_engine/releases/download/0.25.2/voicevox_engine-linux-nvidia-0.25.2.7z.{001,002}` を 7z で展開
-- **GPU 確認**: 起動ログに `CUDA (device_id=0)を利用します` が出ること、`nvidia-smi` で VRAM 使用が現れること（~580MiB）
+  （VOICEVOX アプリを GUI 起動しても 50021 で同エンジンが立ち上がる）
+- **疎通確認**: `Invoke-RestMethod http://127.0.0.1:50021/version`
+- **停止**: `Get-Process run | Stop-Process`（または VOICEVOX アプリを終了）
+- **DL 元（再現用）**: VOICEVOX 公式リリースの **Windows 版**（`voicevox-windows-nvidia-*` または インストーラ）。CPU 版を使う場合は `--use_gpu` を外す
+- **GPU 確認**: 起動ログに `CUDA ... を利用します` が出ること、`nvidia-smi` で VRAM 使用が現れること
 
 ### 関数 / API シグネチャ
 
@@ -47,7 +49,7 @@ depends_on: []
 ### エッジケース
 
 - CPU / GPU の選択（CUDA 版エンジンと CPU 版があれば、GPU 版を選び `nvidia-smi` の VRAM に収まることを確認）
-- WSL2 から Windows 側の VOICEVOX を叩く代替案も将来取りうるが、本タスクでは Linux 版を直接起動する
+- 本タスクは Windows ネイティブで VOICEVOX Windows 版を直接起動する（[ADR-0005](../../../../adr/0005-windows-native-audio-path.md)）
 
 ## 依存関係
 

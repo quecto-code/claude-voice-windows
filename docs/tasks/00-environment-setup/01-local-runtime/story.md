@@ -17,10 +17,10 @@ Python 仮想環境（uv による `.venv`）と pytest 初期スキャフォー
 
 ## 受入条件
 
-- [ ] `.venv/bin/python --version` が `Python 3.10.*` または `3.11.*` を返す
-- [ ] `.venv/bin/pytest --version` がエラーなく成功する
+- [ ] `.venv\Scripts\python.exe --version` が `Python 3.10.*` または `3.11.*` を返す
+- [ ] `.venv\Scripts\pytest.exe --version` がエラーなく成功する
 - [ ] `pyproject.toml` が存在し `requires-python` が固定されている（dev 依存に pytest を含む）
-- [ ] `tests/__init__.py` と最低 1 個のプレースホルダテスト（例: `tests/test_smoke.py` の `def test_smoke(): assert True`）が存在し、`.venv/bin/pytest` が 1 件 pass する
+- [ ] `tests/__init__.py` と最低 1 個のプレースホルダテスト（例: `tests/test_smoke.py` の `def test_smoke(): assert True`）が存在し、`.venv\Scripts\pytest.exe` が 1 件 pass する
 - [ ] `uv lock` 由来の lockfile（`uv.lock`）が生成されている
 
 ## 仕様詳細

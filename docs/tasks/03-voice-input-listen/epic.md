@@ -11,7 +11,7 @@ depends_on:
 
 ユーザの発話を文字起こしして Claude への指示に変換する機能。録音中は vosk でストリーミング認識（確定ワード「以上」のスポッティング）、発話確定後に faster-whisper で高品質な最終テキストを得る二段構成（[ADR-0003](../../adr/0003-dual-engine-streaming-listen.md)）。
 
-実装は `src/claude_voice/listen/` 配下に閉じる（[design.md#構成](../../design/design.md#構成) の独立 2 パイプライン方針）。並行性は **sox 子プロセス + 単一読取スレッド + vosk + SIGTERM** で実装する（[design.md 設計判断 2](../../design/design.md#主要な設計判断とその理由)）。
+実装は `src/claude_voice/listen/` 配下に閉じる（[design.md#構成](../../design/design.md#構成) の独立 2 パイプライン方針）。並行性は **sox 子プロセス + 単一読取スレッド + vosk + terminate(停止)** で実装する（[design.md 設計判断 2](../../design/design.md#主要な設計判断とその理由)。Windows ネイティブのため停止は `proc.terminate()`、[ADR-0005](../../adr/0005-windows-native-audio-path.md)）。
 
 ## ゴール・成功基準
 
@@ -32,8 +32,8 @@ depends_on:
 
 ### 含むもの (in scope)
 
-- `sox` による pulse マイク録音と sox 自身による silence 自動停止
-- vosk ストリーミングによる確定ワード検出と sox の SIGTERM 停止
+- `sox` による waveaudio マイク録音と sox 自身による silence 自動停止
+- vosk ストリーミングによる確定ワード検出と sox の terminate(停止)
 - faster-whisper による最終文字起こし
 - `voice_listen` MCP ツール（status: ok / silent / unintelligible）
 

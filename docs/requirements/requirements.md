@@ -171,7 +171,7 @@ THEN THE SYSTEM SHALL ユーザに音声で確認する
 ## Dependencies
 
 - MCP サーバ連携に対応した Claude Code（Opus 4.7 利用前提）
-- マイク入力・音声出力が利用できる実行環境（WSL2 上の音声経路）
+- マイク入力・音声出力が利用できる実行環境（**Windows ネイティブ**。sox の `waveaudio` 経由。当初の WSL2 前提は [ADR-0005](../adr/0005-windows-native-audio-path.md) で更新）
 - 無料の STT / TTS 手段（具体的な選定は design 段階）
 - 既存 ADR: なし（新規プロジェクト）
 

@@ -15,8 +15,8 @@ depends_on: []
 
 - [x] プロジェクト直下に `README.md` が存在する → 124 行
 - [x] `grep -E '^## (前提条件|セットアップ|起動|git remote 方針)' README.md | wc -l` が `4` を返す → 4
-- [x] `## セットアップ` 節に次のコマンド類が記載されている: `uv venv` 系の作成手順・VOICEVOX エンジンの起動コマンド・vosk モデルの DL/展開コマンド → `uv venv` / `voicevox-engine/linux-nvidia/run --use_gpu` / `vosk-model-ja-0.22.zip` を grep 確認
-- [x] `## 起動` 節に `python -m claude_voice`（または `.venv/bin/python -m claude_voice`）が含まれている
+- [ ] `## セットアップ` 節に次のコマンド類が記載されている: `uv venv` 系の作成手順・VOICEVOX **Windows 版**エンジンの起動コマンド（`run.exe --use_gpu` または VOICEVOX アプリ）・vosk モデルの DL/展開コマンド（[ADR-0005](../../../../adr/0005-windows-native-audio-path.md)）
+- [ ] `## 起動` 節に `python -m claude_voice`（または `.venv\Scripts\python.exe -m claude_voice`）が含まれている
 - [x] `## git remote 方針` 節に「使う」または「使わない」が明記され、使う場合は remote 名と URL の記入欄がある → 「使う」、`origin` / `git@github.com:quecto-code/claude-voice.git` を明記
 
 ## 仕様詳細
@@ -28,7 +28,7 @@ depends_on: []
 - `docs/tasks/STATUS.md`（進捗更新）
 
 README に含めた節:
-- **前提条件**: OS / Python / uv / 7z / curl / GPU / 音声 I/O
+- **前提条件**: OS（**Windows 11**）/ Python / uv / 7-Zip / sox（waveaudio）/ GPU / 音声 I/O
 - **セットアップ**: ① venv 構築 ② VOICEVOX エンジン DL & 起動 ③ vosk モデル DL & 配置
 - **起動**: `python -m claude_voice` + 環境変数表（`CLAUDE_VOICE_*` で `config.py` を上書き）
 - **git remote 方針**: 使う / `origin` / `git@github.com:quecto-code/claude-voice.git` / `main`

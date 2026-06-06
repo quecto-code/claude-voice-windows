@@ -20,7 +20,7 @@ depends_on:
 ## 受入条件
 
 - [ ] `src/claude_voice/speak/synthesizer.py` に `synthesize(text: str, speaker: int) -> bytes | None` が実装され、VOICEVOX の `/audio_query` → `/synthesis` を叩いて WAV bytes を返す
-- [ ] `src/claude_voice/speak/player.py` に `play(wav: bytes) -> bool` が実装され、`sox` で WSLg pulse sink に同期再生する
+- [ ] `src/claude_voice/speak/player.py` に `play(wav: bytes) -> bool` が実装され、`sox` で Windows の `waveaudio` 既定デバイスに同期再生する
 - [ ] `src/claude_voice/speak/__init__.py` から `speak(text: str) -> SpeakResult` が公開され、合成 + 再生を順に行う
 - [ ] MCP ツール `voice_speak(text: str) -> SpeakResult` が `server.py` に登録され、`speak.speak(text)` を呼ぶ薄いラッパとして動く
 - [ ] 日本語テキスト（例「ファイルを3件更新しました」）を渡すと、人間が聞き取れる日本語音声が再生される
@@ -75,7 +75,7 @@ depends_on:
 
 ## 補足
 
-- 再生は `sox` の pulse 出力（`PULSE_SERVER=unix:/mnt/wslg/PulseServer`）
+- 再生は `sox` の `waveaudio` 出力（`sox -t wav - -t waveaudio default`。Windows Multimedia Audio 既定デバイス）
 - 関連設計:
   - [design.md#構成](../../../design/design.md#構成)（speak/ サブパッケージの責務）
   - [design.md#インターフェース](../../../design/design.md#インターフェース)（MCP ツール / speak 公開 API / 内部関数 / VOICEVOX 外部 API）

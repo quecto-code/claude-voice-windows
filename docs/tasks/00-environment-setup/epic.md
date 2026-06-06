@@ -33,7 +33,7 @@ claude-voice は Python ランタイム・MCP SDK・faster-whisper・vosk・VOIC
 ### 含むもの (in scope)
 
 - Python 仮想環境（uv による `.venv` 構築）と pytest 初期スキャフォールド
-- VOICEVOX 音声合成エンジン（Linux 版）の DL と起動手段の整備
+- VOICEVOX 音声合成エンジン（**Windows 版**、[ADR-0005](../../adr/0005-windows-native-audio-path.md)）の DL と起動手段の整備
 - vosk 日本語モデル（vosk-model-ja-0.22 を想定）の DL と配置
 - セットアップ手順 README（前提条件・起動方法・git remote 方針）
 
@@ -59,7 +59,7 @@ claude-voice は Python ランタイム・MCP SDK・faster-whisper・vosk・VOIC
 ## リスク・未決事項
 
 - git remote 方針は未確定（GitHub 等を使うか、ローカルのみか）。`03-setup-documentation/01-write-setup-readme` で確定する
-- VOICEVOX Linux 版の正確な配置先（ホーム配下 / プロジェクト配下）は実装時に決める
+- VOICEVOX Windows 版の正確な配置先（VOICEVOX アプリ同梱 / エンジン単体配布）は実装時に決める
 
 ## 補足
 

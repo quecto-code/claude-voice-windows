@@ -46,7 +46,7 @@ depends_on: []
 ### エッジケース
 
 - Python 3.10 と 3.11 が両方ある環境では 3.11 を優先する（型ヒント記法の互換性のため）
-- WSL2 上で `uv venv` が `/mnt/c/...` 配下を選ばないようプロジェクト直下で実行する
+- Windows ネイティブで実行する（[ADR-0005](../../../../adr/0005-windows-native-audio-path.md)）。venv の実行体は `.venv\Scripts\python.exe` / `.venv\Scripts\pytest.exe`（Linux の `.venv/bin/` 相当）
 
 ## 依存関係
 

@@ -8,7 +8,9 @@ depends_on:
 
 ## 背景
 
-親 Story `03-voice-input-listen/01-record-and-finalize` の後半として、`recorder.py` の読取スレッドで vosk Recognizer に PCM を逐次供給し、確定ワード「以上」を検出した時点で sox を SIGTERM して `FinalizeReason.word` で確定させる（[ADR-0003](../../../../adr/0003-dual-engine-streaming-listen.md)、[design.md 設計判断 2](../../../../design/design.md#主要な設計判断とその理由)）。
+親 Story `03-voice-input-listen/01-record-and-finalize` の後半として、`recorder.py` の読取スレッドで vosk Recognizer に PCM を逐次供給し、確定ワード「以上」を検出した時点で sox を停止して `FinalizeReason.word` で確定させる（[ADR-0003](../../../../adr/0003-dual-engine-streaming-listen.md)、[design.md 設計判断 2](../../../../design/design.md#主要な設計判断とその理由)）。
+
+> **注（[ADR-0005](../../../../adr/0005-windows-native-audio-path.md)）**: 本タスク中の「SIGTERM」は Windows ネイティブでは `proc.terminate()`（`TerminateProcess`）を指す。Windows に POSIX SIGTERM はなく、停止直前の flush は保証されないが確定済み PCM は読取スレッドが buffer に保持済みのため取りこぼしは最小。
 
 親 Story: 03-voice-input-listen/01-record-and-finalize
 

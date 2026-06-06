@@ -8,7 +8,7 @@ depends_on:
 
 ## 背景
 
-親 Story `02-voice-output-speak/01-synthesize-and-play` の追加タスク。VOICEVOX は 24kHz で合成するが、`player.play` が 24kHz のまま WSLg PulseAudio に渡すと、pulse 側の内部リサンプリング/バッファ不足で「カリカリ・プツプツ」歪みが乗る。再生側の `sox` でバッファ拡大＋高品質リサンプリングして歪みを解消する（Audio Quality NFR）。
+親 Story `02-voice-output-speak/01-synthesize-and-play` の追加タスク。VOICEVOX は 24kHz で合成する。WSL2 時代は 24kHz のまま WSLg PulseAudio に渡すと内部リサンプリング/バッファ不足で「カリカリ・プツプツ」歪みが乗ったため `sox` でバッファ拡大＋高品質リサンプリングして解消した。**Windows ネイティブ（[ADR-0005](../../../../adr/0005-windows-native-audio-path.md)）ではこの WSLg 由来の歪みは発生しない**が、`--buffer` / `rate -v` は underrun 耐性の保険として残す（既定で無害、Audio Quality NFR は存続）。
 
 > 本タスクは既存タスク `02-.../02-implement-player...`（完了済み）の**後発の品質改善**であり、元タスクを reopen せず新タスクとして追加した（[CH-001](../../../../changes/CHANGELOG.md)、spec-amend 経由）。元タスクの受入条件「`sox … default` 相当」は本変更後も満たされる。
 
@@ -16,7 +16,7 @@ depends_on:
 
 ## 受入条件
 
-- [x] `src/claude_voice/speak/player.py` の `sox` 起動に `--buffer <SOX_BUFFER_BYTES>` と末尾の `rate -v <PLAYBACK_SAMPLE_RATE>` を追加し、WSLg PulseAudio の内部リサンプリング/underrun 由来の歪みを回避する → mock で sox 引数を確認（`tests/test_player.py`）
+- [x] `src/claude_voice/speak/player.py` の `sox` 起動に `--buffer <SOX_BUFFER_BYTES>` と末尾の `rate -v <PLAYBACK_SAMPLE_RATE>` を追加し、再生バッファ不足（underrun）由来の歪みを回避する → mock で sox 引数を確認（`tests/test_player.py`）
 - [x] `src/claude_voice/config.py` に `PLAYBACK_SAMPLE_RATE`（既定 48000）と `SOX_BUFFER_BYTES`（既定 32768）を追加し、`CLAUDE_VOICE_PLAYBACK_SAMPLE_RATE` / `CLAUDE_VOICE_SOX_BUFFER_BYTES` で env 上書き可能にする
 - [x] `tests/test_player.py` に sox コマンドの `--buffer` と `rate -v <PLAYBACK_SAMPLE_RATE>` を検証するテストを追加し pass する
 

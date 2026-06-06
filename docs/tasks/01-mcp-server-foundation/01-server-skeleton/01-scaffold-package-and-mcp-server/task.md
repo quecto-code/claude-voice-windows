@@ -15,7 +15,7 @@ depends_on: []
 
 - [x] `pyproject.toml` に `requires-python` と MCP SDK / faster-whisper / vosk / requests（VOICEVOX 用）等の依存が宣言されている → `mcp>=1.27.1` / `faster-whisper>=1.2.1` / `vosk>=0.3.45` / `requests>=2.34.2`、`requires-python = ">=3.10,<3.12"`
 - [x] `src/claude_voice/__init__.py` が存在する（中身は空でよい）
-- [x] `src/claude_voice/__main__.py` から `server.run()` が呼ばれ、`python -m claude_voice` で stdio サーバとして起動する → `timeout 5 python -m claude_voice </dev/null` が rc=0 で抜ける（stdio EOF で正常終了）
+- [ ] `src/claude_voice/__main__.py` から `server.run()` が呼ばれ、`python -m claude_voice` で stdio サーバとして起動する → PowerShell `'' | python -m claude_voice`（stdio EOF で正常終了）で確認（[ADR-0005](../../../../adr/0005-windows-native-audio-path.md)）
 - [x] `src/claude_voice/types.py` に次が定義されている: `FinalizeReason` / `ListenResult` / `SpeakResult` → pytest 3 件
 - [x] `src/claude_voice/config.py` に 7 定数 + `CLAUDE_VOICE_*` 環境変数上書き → pytest 4 件（既定値・上書き・float パース失敗・int パース失敗）
 - [x] `src/claude_voice/server.py` で `FastMCP` を生成し `voice_ping()` が `"pong"` を返す → pytest 1 件

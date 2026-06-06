@@ -51,7 +51,7 @@ depends_on: []
 
 ### エッジケース
 
-- DL サイズが約 1GB と大きいので、`/mnt/c/` 配下に置かない（I/O が遅い）
+- DL サイズが約 1GB と大きい。Windows ネイティブのローカルディスク（プロジェクト直下 `models/`）に配置する（[ADR-0005](../../../../adr/0005-windows-native-audio-path.md)）
 - 別バージョン（`vosk-model-small-ja-*` 等）を使う場合は `config.VOSK_MODEL_PATH` を上書きすればよい旨を README に明記
 
 ## 依存関係

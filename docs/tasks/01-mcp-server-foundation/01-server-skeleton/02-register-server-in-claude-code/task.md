@@ -14,7 +14,7 @@ depends_on:
 
 ## 受入条件
 
-- [x] MCP 設定（`.mcp.json` もしくは `claude mcp add` 相当）に claude-voice サーバの起動コマンドが定義されている（例: `python -m claude_voice`、絶対パスまたは venv 経路で解決可能）→ `.mcp.json` 新規作成、`command=/home/yuno/dev/claude-voice/.venv/bin/python`、`args=["-m","claude_voice"]`。`timeout 3 .venv/bin/python -m claude_voice </dev/null` rc=0 で stdio 起動を再確認
+- [ ] MCP 設定（`.mcp.json` もしくは `claude mcp add` 相当）に claude-voice サーバの起動コマンドが定義されている（`python -m claude_voice`、絶対パスまたは venv 経路で解決可能）→ `.mcp.json` に `command=C:\\Users\\yuno\\dev\\claude-voice\\.venv\\Scripts\\python.exe`、`args=["-m","claude_voice"]`（Windows ネイティブ、[ADR-0005](../../../../adr/0005-windows-native-audio-path.md)）
 - [ ] Claude Code 起動後、ツール一覧に `voice_ping` が表示される → **手動検証**: 次回 Claude Code 起動時に確認
 - [ ] Claude から `voice_ping` を呼ぶと `"pong"` が返る → **手動検証**: 同上、再起動後に呼び出して確認
 
@@ -26,12 +26,12 @@ depends_on:
 - `docs/tasks/.../task.md`（受入条件チェック）
 - `docs/tasks/STATUS.md`（6/17）
 
-`.mcp.json` の内容（venv の python を絶対パスで指定）:
+`.mcp.json` の内容（venv の python を絶対パスで指定。Windows なので `.venv\Scripts\python.exe`。JSON ではバックスラッシュをエスケープ）:
 ```json
 {
   "mcpServers": {
     "claude-voice": {
-      "command": "/home/yuno/dev/claude-voice/.venv/bin/python",
+      "command": "C:\\Users\\yuno\\dev\\claude-voice\\.venv\\Scripts\\python.exe",
       "args": ["-m", "claude_voice"]
     }
   }
@@ -49,7 +49,7 @@ depends_on:
 
 ### エッジケース
 
-- WSL2 のパス／Python 実行パスを Claude Code 側から絶対パスで指す必要があるか確認する
+- Windows のパス（`.venv\Scripts\python.exe`）を Claude Code 側から絶対パスで指す（[ADR-0005](../../../../adr/0005-windows-native-audio-path.md)）
 
 ## 依存関係
 

@@ -21,8 +21,8 @@ depends_on:
 
 - [ ] プロジェクト直下に `README.md` が存在する
 - [ ] README に次の節がすべて含まれる: `## 前提条件` / `## セットアップ` / `## 起動` / `## git remote 方針`
-- [ ] `## セットアップ` に「uv で venv 作成」「VOICEVOX Linux 版エンジン DL & 起動」「vosk 日本語モデル DL & `models/` 配置」が手順として書かれている
-- [ ] `## 起動` に `python -m claude_voice`（または `.venv/bin/python -m claude_voice`）が起動コマンドとして記載されている
+- [ ] `## セットアップ` に「uv で venv 作成」「VOICEVOX **Windows 版**エンジン DL & 起動」「vosk 日本語モデル DL & `models/` 配置」が手順として書かれている（[ADR-0005](../../../adr/0005-windows-native-audio-path.md)）
+- [ ] `## 起動` に `python -m claude_voice`（または `.venv\Scripts\python.exe -m claude_voice`）が起動コマンドとして記載されている
 - [ ] `## git remote 方針` に「remote を使う（リモート名と URL）」または「ローカル運用（remote なし）」のどちらかが明記されている
 - [ ] README の手順を別環境で踏むと、最後に MCP ハンドシェイクまで到達できる（手動検証）
 
