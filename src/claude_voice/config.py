@@ -74,3 +74,8 @@ PLAYBACK_SAMPLE_RATE: int = _get_int("CLAUDE_VOICE_PLAYBACK_SAMPLE_RATE", 48000)
 
 #: sox 再生時のバッファサイズ（バイト）。underrun 由来のプツプツを抑える保険。
 SOX_BUFFER_BYTES: int = _get_int("CLAUDE_VOICE_SOX_BUFFER_BYTES", 32768)
+
+#: 再生末尾に付ける無音パディング（秒）。sox の waveaudio 出力はデバイスを閉じる
+#: 際に最後の 1 バッファ分をドレインせず捨てることがあり、末尾の音声が切れる。
+#: 取りこぼされるのが無音になるよう、バッファ長以上のパディングを付ける（ADR-0005）。
+PLAYBACK_TAIL_PAD_SEC: float = _get_float("CLAUDE_VOICE_PLAYBACK_TAIL_PAD_SEC", 0.8)

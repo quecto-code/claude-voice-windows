@@ -3,8 +3,10 @@
 design.md「player.py の sox 再生」: VOICEVOX の 24kHz WAV を Windows の音声エンジン
 （`-t waveaudio default`）にそのまま渡す。WSLg PulseAudio 由来の歪みは Windows
 ネイティブでは発生しない（ADR-0005）が、underrun 耐性の保険として ``--buffer`` で
-バッファを拡大し、末尾の ``rate -v`` で高品質リサンプリングして
-``PLAYBACK_SAMPLE_RATE`` に整える（Audio Quality NFR、既定で無害）。
+バッファを拡大し、``rate -v`` で高品質リサンプリングして ``PLAYBACK_SAMPLE_RATE``
+に整える（Audio Quality NFR、既定で無害）。さらに末尾に ``pad`` で無音を足し、
+waveaudio がデバイス close 時に最後の 1 バッファを捨てても本来の末尾が切れない
+ようにする（``PLAYBACK_TAIL_PAD_SEC``）。
 
 例外は一切上位に投げず、成功 True / 失敗 False を返す。
 """
@@ -24,6 +26,9 @@ def _build_sox_command() -> list[str]:
         "-t", "wav", "-",
         "-t", "waveaudio", "default",
         "rate", "-v", str(config.PLAYBACK_SAMPLE_RATE),
+        # 末尾の無音パディング。waveaudio がデバイス close 時に最後の 1 バッファを
+        # 捨てても、捨てられるのが無音になり本来の末尾が切れない（ADR-0005）。
+        "pad", "0", str(config.PLAYBACK_TAIL_PAD_SEC),
     ]
 
 

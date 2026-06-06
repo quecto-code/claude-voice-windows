@@ -22,6 +22,7 @@ claude-voice の実行環境を **WSL2（WSLg PulseAudio）から Windows ネイ
 
 - **録音**: `sox -t waveaudio default -r 16000 -c 1 -t raw -e signed -b 16 - silence ...`。無音による自然停止は sox の silence エフェクトで従来どおり。
 - **再生**: `sox -t wav - -t waveaudio default`。VOICEVOX の 24kHz をそのまま Windows 音声エンジンに渡せる。CH-001 の `--buffer` / `rate -v` は **WSLg 由来の歪み対策としては不要**になるが、underrun 耐性の保険として残し、既定で無害に効くよう `config` 化を維持する（Audio Quality NFR 自体は存続）。
+- **末尾の取りこぼし対策（実機で判明）**: waveaudio はデバイス close 時に最後の 1 バッファ（≈`SOX_BUFFER_BYTES` 分 ＝ 48kHz/16bit/mono で約 0.34 秒）をドレインせず捨てることがあり、末尾の音声が切れる。sox エフェクト末尾に `pad 0 <PLAYBACK_TAIL_PAD_SEC>`（既定 0.8 秒、バッファ長以上）で無音を足し、捨てられるのが無音になるようにして本来の末尾を守る。
 - **プロセス終了（確定ワード）**: Windows には POSIX SIGTERM がない。`proc.terminate()` は `TerminateProcess`（強制終了）になる。sox 終了直前の数チャンク flush は保証されないが、確定済み PCM は読取スレッドが buffer に保持済みのため取りこぼしは最小。設計上は「SIGTERM」を「terminate（停止シグナル）」と読み替える。
 - **CUDA**: faster-whisper は `device="cuda"` のまま。前提は WSL の `libcuda.so` ではなく Windows の CUDA/cuDNN ランタイム（`.dll`）。
 - **パス・起動**: venv は `.venv\Scripts\python.exe`、`.mcp.json` の `command` も Windows パス。VOICEVOX は Windows 版エンジン（HTTP API `:50021` は同一なので `synthesizer.py` は不変）。

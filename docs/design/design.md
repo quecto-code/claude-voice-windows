@@ -88,7 +88,7 @@ claude-voice/
 | `listen/transcriber.py` | faster-whisper（small/CUDA）に PCM を渡して文字起こし。確定ワード「以上」の末尾除去も担う | ADR-0003 |
 | `speak/__init__.py` | `speak(text) -> SpeakResult` を公開。synthesizer と player を順に呼ぶ | CONTEXT「読み上げの 4 役割」（中身の判別はプロンプト側、再生はここ） |
 | `speak/synthesizer.py` | VOICEVOX に POST `/audio_query` → `/synthesis`。WAV bytes を返す | TTS 選定 |
-| `speak/player.py` | WAV bytes を `sox --buffer <SOX_BUFFER_BYTES> -t wav - -t waveaudio default rate -v <PLAYBACK_SAMPLE_RATE>` で同期再生。VOICEVOX の 24kHz をそのまま Windows 音声エンジンに渡せるが、underrun 耐性の保険として `--buffer` 拡大＋`rate -v` 高品質リサンプリングを残す（Audio Quality NFR）。WSLg PulseAudio 由来の歪みは Windows ネイティブでは発生しないため、これらは保険であり既定で無害（[ADR-0005](../adr/0005-windows-native-audio-path.md)） | 音声経路（Windows waveaudio + sox） |
+| `speak/player.py` | WAV bytes を `sox --buffer <SOX_BUFFER_BYTES> -t wav - -t waveaudio default rate -v <PLAYBACK_SAMPLE_RATE> pad 0 <PLAYBACK_TAIL_PAD_SEC>` で同期再生。VOICEVOX の 24kHz をそのまま Windows 音声エンジンに渡せるが、underrun 耐性の保険として `--buffer` 拡大＋`rate -v` 高品質リサンプリングを残す（Audio Quality NFR）。さらに末尾に `pad` で無音を足し、waveaudio がデバイス close 時に最後の 1 バッファ（≈`SOX_BUFFER_BYTES` 分）を捨てても本来の末尾が切れないようにする（[ADR-0005](../adr/0005-windows-native-audio-path.md)） | 音声経路（Windows waveaudio + sox） |
 | `tests/listen/`, `tests/speak/` | pytest（独立ツリー、Python 慣習） | stack-patterns |
 
 ### 配置ルール（新しいコードの置き場所を即断するため）

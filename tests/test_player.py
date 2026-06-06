@@ -37,7 +37,18 @@ def test_play_command_has_buffer_and_rate():
     assert "--buffer" in cmd
     assert cmd[cmd.index("--buffer") + 1] == str(config.SOX_BUFFER_BYTES)
     assert "rate" in cmd and "-v" in cmd
-    assert cmd[-1] == str(config.PLAYBACK_SAMPLE_RATE)
+    assert cmd[cmd.index("rate") + 2] == str(config.PLAYBACK_SAMPLE_RATE)
+
+
+def test_play_command_has_trailing_pad():
+    # waveaudio の末尾取りこぼし対策（ADR-0005）。pad は rate の後に置く。
+    with mock.patch.object(player.subprocess, "run", return_value=_ok()) as run:
+        player.play(b"x")
+    cmd = run.call_args.args[0]
+    assert "pad" in cmd
+    assert cmd[cmd.index("pad") + 1] == "0"
+    assert cmd[cmd.index("pad") + 2] == str(config.PLAYBACK_TAIL_PAD_SEC)
+    assert cmd.index("pad") > cmd.index("rate")
 
 
 def test_play_nonzero_returncode_returns_false():

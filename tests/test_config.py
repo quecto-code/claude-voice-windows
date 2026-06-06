@@ -19,7 +19,7 @@ def test_defaults(monkeypatch):
         "CLAUDE_VOICE_FINALIZE_WORD", "CLAUDE_VOICE_VOSK_MODEL_PATH",
         "CLAUDE_VOICE_WHISPER_MODEL_SIZE", "CLAUDE_VOICE_VOICEVOX_URL",
         "CLAUDE_VOICE_SPEAKER_ID", "CLAUDE_VOICE_PLAYBACK_SAMPLE_RATE",
-        "CLAUDE_VOICE_SOX_BUFFER_BYTES",
+        "CLAUDE_VOICE_SOX_BUFFER_BYTES", "CLAUDE_VOICE_PLAYBACK_TAIL_PAD_SEC",
     ]:
         monkeypatch.delenv(key, raising=False)
     config = _reload(monkeypatch)
@@ -32,6 +32,7 @@ def test_defaults(monkeypatch):
     assert config.SPEAKER_ID == 1
     assert config.PLAYBACK_SAMPLE_RATE == 48000
     assert config.SOX_BUFFER_BYTES == 32768
+    assert config.PLAYBACK_TAIL_PAD_SEC == 0.8
 
 
 def test_env_override(monkeypatch):
