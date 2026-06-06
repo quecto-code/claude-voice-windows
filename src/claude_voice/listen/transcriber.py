@@ -10,10 +10,40 @@ CUDA は Windows ネイティブの CUDA/cuDNN ランタイム（`.dll`）を使
 
 from __future__ import annotations
 
+import os
 import sys
 import threading
 
 import numpy as np
+
+
+def _add_cuda_dll_dirs() -> None:
+    """CTranslate2 が要求する CUDA DLL（cuBLAS / cuDNN）を見つけられるようにする。
+
+    pip の ``nvidia-cublas-cu12`` / ``nvidia-cudnn-cu12`` は DLL を
+    ``site-packages/nvidia/*/bin`` に置くが、これらは既定の DLL 探索パスに入らない。
+    CTranslate2 は cublas を実行時に ``PATH`` 経由でロードするため、
+    ``os.add_dll_directory``（LOAD_LIBRARY_SEARCH_USER_DIRS）だけでは届かない。
+    そこで bin ディレクトリを ``PATH`` 先頭に前置きし、併せて add_dll_directory も
+    呼ぶ。通常起動（``python -m claude_voice``）でも CUDA を使えるようにする
+    （ADR-0005。非 Windows・未導入なら無処理）。
+    """
+    nvidia_root = os.path.join(os.path.dirname(os.path.dirname(np.__file__)), "nvidia")
+    if not os.path.isdir(nvidia_root):
+        return
+    for pkg in sorted(os.listdir(nvidia_root)):
+        bin_dir = os.path.join(nvidia_root, pkg, "bin")
+        if not os.path.isdir(bin_dir):
+            continue
+        os.environ["PATH"] = bin_dir + os.pathsep + os.environ.get("PATH", "")
+        if hasattr(os, "add_dll_directory"):  # Windows のみ
+            try:
+                os.add_dll_directory(bin_dir)
+            except OSError:
+                pass
+
+
+_add_cuda_dll_dirs()
 
 try:  # faster-whisper 本体のインポート失敗も None 経路で吸収する。
     from faster_whisper import WhisperModel

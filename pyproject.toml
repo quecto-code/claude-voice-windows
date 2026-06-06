@@ -9,6 +9,9 @@ dependencies = [
     "vosk>=0.3.45",
     "requests>=2.34.2",
     "numpy>=1.26",
+    # faster-whisper(CTranslate2) の CUDA 実行に必要な DLL（Windows）。ADR-0005。
+    "nvidia-cublas-cu12>=12.9; platform_system == 'Windows'",
+    "nvidia-cudnn-cu12>=9.0; platform_system == 'Windows'",
 ]
 
 [project.scripts]
