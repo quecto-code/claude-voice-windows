@@ -9,8 +9,9 @@ from __future__ import annotations
 
 from mcp.server.fastmcp import FastMCP
 
+from .listen import listen as _listen
 from .speak import speak as _speak
-from .types import SpeakResult
+from .types import ListenResult, SpeakResult
 
 mcp = FastMCP("claude-voice")
 
@@ -19,6 +20,12 @@ mcp = FastMCP("claude-voice")
 def voice_ping() -> str:
     """疎通確認用。常に "pong" を返す。"""
     return "pong"
+
+
+@mcp.tool()
+def voice_listen() -> ListenResult:
+    """マイクから 1 発話を録音・文字起こしして返す（listen.listen の薄いラッパ）。"""
+    return _listen()
 
 
 @mcp.tool()
